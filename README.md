@@ -3,3 +3,4 @@
 
 - Built in Go version 1.19.2
 - Uses [the chi router](https://github.com/go-chi/chi/v5)
+- Uses [golang migate](https://github.com/golang-migrate/migrate)

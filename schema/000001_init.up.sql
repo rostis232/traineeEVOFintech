@@ -1,7 +1,6 @@
 CREATE TABLE transactions
 (
-    id serial primary key,
-    transaction_id integer,
+    transaction_id integer primary key unique,
     request_id integer,
     terminal_id integer,
     partner_object_id integer,
@@ -24,6 +23,4 @@ CREATE TABLE transactions
     payment_narrative varchar(250)
 );
 
--- CREATE INDEX 'idx_TransactionId'  ON 'transactions' ('TransactionId');
--- CREATE INDEX 'idx_RequestId'  ON 'transactions' ('RequestId');
--- CREATE INDEX 'idx_TerminalId'  ON 'transactions' ('TerminalId');
+-- CREATE INDEX

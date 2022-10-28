@@ -6,3 +6,4 @@
 - Uses [golang migate](https://github.com/golang-migrate/migrate)
 - Uses [sqlx](https://github.com/jmoiron/sqlx)
 - Uses [pq](https://github.com/lib/pq)
+- Uses [gocsv parser](https://github.com/gocarina/gocsv)

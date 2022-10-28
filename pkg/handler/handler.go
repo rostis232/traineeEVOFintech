@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"encoding/csv"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gocarina/gocsv"
+	"github.com/rostis232/traineeEVOFintech"
 	"github.com/rostis232/traineeEVOFintech/pkg/service"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -43,33 +43,9 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 		log.Println(err)
 		c.String(http.StatusBadRequest, fmt.Sprintf("'%s' not uploaded!", file.Filename))
 	} else {
+		CSVToStruct(timestamp)
+
 		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
-
-		//TODO: needs to return error?
-		func(timestamp string) {
-			f, err := os.Open(fmt.Sprintf("./uploads/%s", timestamp+".csv"))
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			defer f.Close()
-
-			csvReader := csv.NewReader(f)
-			for {
-				rec, err := csvReader.Read()
-				if err == io.EOF {
-					break
-				}
-				if err != nil {
-					log.Fatal(err)
-				}
-				//TODO: Adding new values to DB
-				for _, v := range rec {
-					fmt.Printf("%s\n", v)
-				}
-
-			}
-		}(timestamp)
 	}
 
 }
@@ -77,3 +53,23 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 func (h *Handler) getJson(c *gin.Context) {}
 
 func (h *Handler) getCsv(c *gin.Context) {}
+
+// TODO: needs to return error?
+func CSVToStruct(timestamp string) []*traineeEVOFintech.Transaction {
+	file, err := os.Open(fmt.Sprintf("./uploads/%s", timestamp+".csv"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer file.Close()
+
+	transactions := []*traineeEVOFintech.Transaction{}
+
+	if err := gocsv.UnmarshalFile(file, &transactions); err != nil {
+		log.Fatal(err)
+	}
+	for _, transaction := range transactions {
+		fmt.Println("Hello, ", transaction.DateInput)
+	}
+	return transactions
+}

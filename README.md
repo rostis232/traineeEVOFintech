@@ -5,3 +5,4 @@
 - Uses [gin router](https://github.com/gin-gonic/gin)
 - Uses [golang migate](https://github.com/golang-migrate/migrate)
 - Uses [sqlx](https://github.com/jmoiron/sqlx)
+- Uses [pq](https://github.com/lib/pq)

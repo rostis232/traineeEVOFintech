@@ -3,7 +3,6 @@ package config
 import "github.com/rostis232/traineeEVOFintech/pkg/repository"
 
 const PortNumber = "8000"
-const OnProduction = false
 
 var DBConfig = repository.DBConfig{
 	Host:     "localhost",

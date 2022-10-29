@@ -51,7 +51,7 @@ func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.
 	if ok == true {
 		query += fmt.Sprintf("transaction_id = %s;", v)
 	}
-	fmt.Println(query)
+
 	if err := i.db.Select(&transactions, query); err != nil {
 		return nil, err
 	}

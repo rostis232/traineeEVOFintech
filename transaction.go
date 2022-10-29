@@ -11,10 +11,10 @@ func (date *DateTime) UnmarshalCSV(csv string) (err error) {
 	return err
 }
 
-// TODO: What type of DateInput & DatePost?
-// TODO: What type of moneytery fields? float32 or flot64?
-// TODO: What type of Service & PaymentNarrative? string or []rune, []byte?
-// TODO: What type of PayeeBankMfo? uint or uint8?
+func (date *DateTime) MarshalStruct() (string, error) {
+	return date.Time.Format("20060201"), nil
+}
+
 type Transaction struct {
 	TransactionId      uint     `db:"transaction_id" csv:"TransactionId"`
 	RequestId          uint     `db:"request_id" csv:"RequestId"`

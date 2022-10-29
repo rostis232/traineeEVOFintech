@@ -58,8 +58,22 @@ func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.
 		if !strings.HasSuffix(query, "WHERE ") {
 			query += " AND "
 		}
-		//TODO: Can be more than only one ID!!!
-		query += fmt.Sprintf("terminal_id = %s", v)
+		arguments := strings.Split(v, ",")
+		if len(arguments) == 1 {
+			query += fmt.Sprintf("terminal_id = %s", v)
+		} else {
+			query += "terminal_id IN ("
+			for i, a := range arguments {
+				query += fmt.Sprintf("'%s'", a)
+				if i != len(arguments)-1 {
+					query += ","
+				} else {
+					query += ")"
+				}
+
+			}
+		}
+
 	}
 
 	v, ok = m["status"]

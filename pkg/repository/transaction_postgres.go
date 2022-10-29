@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/rostis232/traineeEVOFintech"
 	"strings"
+	"time"
 )
 
 type TransactionPostgres struct {
@@ -92,21 +93,24 @@ func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.
 		query += fmt.Sprintf("payment_type = '%s'", v)
 	}
 
-	//v, ok = m["datePostFrom"]
-	//if ok == true && v != "" {
-	//	if !strings.HasSuffix(query, "WHERE ") {
-	//		query += " AND "
-	//	}
-	//	query += fmt.Sprintf("date_post_from = '%s'", v)
-	//}
-	//
-	//v, ok = m["datePostTo"]
-	//if ok == true && v != "" {
-	//	if !strings.HasSuffix(query, "WHERE ") {
-	//		query += " AND "
-	//	}
-	//	query += fmt.Sprintf("date_post_to = '%s'", v)
-	//}
+	v, ok = m["datePostFrom"]
+	if ok == true && v != "" {
+		if !strings.HasSuffix(query, "WHERE ") {
+			query += " AND "
+		}
+		date, _ := time.Parse("2006-01-02", v)
+		query += fmt.Sprintf("date_post >= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
+	}
+
+	v, ok = m["datePostTo"]
+	if ok == true && v != "" {
+		if !strings.HasSuffix(query, "WHERE ") {
+			query += " AND "
+		}
+		date, _ := time.Parse("2006-01-02", v)
+		date = date.Add(23 * time.Hour).Add(59 * time.Minute).Add(59 * time.Second)
+		query += fmt.Sprintf("date_post <= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
+	}
 
 	v, ok = m["paymentNarrative"]
 	if ok == true && v != "" {

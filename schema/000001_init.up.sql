@@ -1,4 +1,4 @@
-CREATE TABLE transactions
+CREATE TABLE transaction
 (
     transaction_id integer primary key unique,
     request_id integer,
@@ -20,7 +20,7 @@ CREATE TABLE transactions
     payee_name varchar(10),
     payee_bank_mfo integer,
     payee_bank_account varchar(20),
-    payment_narrative varchar(250)
+    payment_narrative varchar(300)
 );
 
 -- CREATE INDEX

@@ -27,7 +27,7 @@ type Transaction struct {
 	CommissionProvider float32  `db:"commission_provider" csv:"CommissionProvider"`
 	DateInput          DateTime `db:"date_input" csv:"DateInput"`
 	DatePost           DateTime `db:"date_post" csv:"DatePost"`
-	Status             string   `db:"status" csv:"DatePost"`
+	Status             string   `db:"status" csv:"Status"`
 	PaymentType        string   `db:"payment_type" csv:"PaymentType"`
 	PaymentNumber      string   `db:"payment_number" csv:"PaymentNumber"`
 	ServiceId          uint     `db:"service_id" csv:"ServiceId"`

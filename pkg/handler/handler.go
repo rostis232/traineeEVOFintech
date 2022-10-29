@@ -36,40 +36,66 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 		log.Println(err)
 	}
 
-	//TODO: filename validation
+	//TODO: filename validation?
 	timestamp := time.Now().Format("02-01-06_15:04:05")
 	err = c.SaveUploadedFile(file, fmt.Sprintf("./uploads/%s", timestamp+".csv"))
 	if err != nil {
 		log.Println(err)
 		c.String(http.StatusBadRequest, fmt.Sprintf("'%s' not uploaded!", file.Filename))
 	} else {
-		CSVToStruct(timestamp)
+		transactions, err := csvToStruct(timestamp)
+		if err != nil {
+			c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
+		}
 
-		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+		err = h.services.Transaction.InsertToDB(transactions)
+		if err != nil {
+			c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
+		} else {
+			c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded and successful added to DB!", file.Filename))
+		}
+
 	}
 
 }
 
-func (h *Handler) getJson(c *gin.Context) {}
+func (h *Handler) getJson(c *gin.Context) {
+	var params = map[string]string{}
+	params["transactionId"] = c.Query("transaction_id")
+	params["terminalId"] = c.Query("terminal_id")
+	params["status"] = c.Query("status")
+	params["paymentType"] = c.Query("payment_type")
+	params["datePostFrom"] = c.Query("date_post_from")
+	params["datePostTo"] = c.Query("date_post_to")
+	params["paymentNarrative"] = c.Query("payment_narrative")
+
+	transactions, err := h.services.Transaction.GetJSON(params)
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
+	} else {
+		c.JSON(http.StatusOK, transactions)
+	}
+}
 
 func (h *Handler) getCsv(c *gin.Context) {}
 
-// TODO: needs to return error?
-func CSVToStruct(timestamp string) []*traineeEVOFintech.Transaction {
+// TODO: needs to return an error?
+func csvToStruct(timestamp string) ([]traineeEVOFintech.Transaction, error) {
 	file, err := os.Open(fmt.Sprintf("./uploads/%s", timestamp+".csv"))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	defer file.Close()
 
-	transactions := []*traineeEVOFintech.Transaction{}
+	transactions := []traineeEVOFintech.Transaction{}
 
 	if err := gocsv.UnmarshalFile(file, &transactions); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	for _, transaction := range transactions {
-		fmt.Println("Hello, ", transaction.DateInput)
+	for _, t := range transactions {
+		fmt.Println(t.Status)
 	}
-	return transactions
+
+	return transactions, nil
 }

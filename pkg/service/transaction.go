@@ -17,6 +17,6 @@ func (s *TransactionService) InsertToDB(transactions []traineeEVOFintech.Transac
 	return s.repo.InsertToDB(transactions)
 }
 
-func (s *TransactionService) GetJSON(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
+func (s *TransactionService) GetJSON(m map[string]string) ([]traineeEVOFintech.TransactionT, error) {
 	return s.repo.GetJSON(m)
 }

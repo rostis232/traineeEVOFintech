@@ -44,6 +44,7 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 		c.String(http.StatusBadRequest, fmt.Sprintf("'%s' not uploaded!", file.Filename))
 	} else {
 		transactions, err := csvToStruct(timestamp)
+
 		if err != nil {
 			c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
 		}
@@ -62,7 +63,7 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 func (h *Handler) getJson(c *gin.Context) {
 	var params = map[string]string{}
 	params["transactionId"] = c.Query("transaction_id")
-	params["terminalId"] = c.Query("terminal_id")
+	params["terminalId"] = c.Query("terminal_id") //Can be more than only one ID
 	params["status"] = c.Query("status")
 	params["paymentType"] = c.Query("payment_type")
 	params["datePostFrom"] = c.Query("date_post_from")
@@ -91,10 +92,8 @@ func csvToStruct(timestamp string) ([]traineeEVOFintech.Transaction, error) {
 	transactions := []traineeEVOFintech.Transaction{}
 
 	if err := gocsv.UnmarshalFile(file, &transactions); err != nil {
+		fmt.Println(err)
 		return nil, err
-	}
-	for _, t := range transactions {
-		fmt.Println(t.Status)
 	}
 
 	return transactions, nil

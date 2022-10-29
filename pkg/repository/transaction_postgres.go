@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/rostis232/traineeEVOFintech"
+	"strings"
 )
 
 type TransactionPostgres struct {
@@ -34,7 +35,6 @@ func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transa
 			query += ", "
 		}
 	}
-	fmt.Println(query)
 
 	row := i.db.QueryRow(query)
 	if err := row.Err(); err != nil {
@@ -44,13 +44,67 @@ func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transa
 	return nil
 }
 
-func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
-	var transactions []traineeEVOFintech.Transaction
+func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.TransactionT, error) {
+	var transactions []traineeEVOFintech.TransactionT
 	query := fmt.Sprintf("SELECT * FROM transaction WHERE ")
+
 	v, ok := m["transactionId"]
-	if ok == true {
-		query += fmt.Sprintf("transaction_id = %s;", v)
+	if ok == true && v != "" {
+		query += fmt.Sprintf("transaction_id = %s", v)
 	}
+
+	v, ok = m["terminalId"]
+	if ok == true && v != "" {
+		if !strings.HasSuffix(query, "WHERE ") {
+			query += " AND "
+		}
+		//TODO: Can be more than only one ID!!!
+		query += fmt.Sprintf("terminal_id = %s", v)
+	}
+
+	v, ok = m["status"]
+	if ok == true && v != "" {
+		if !strings.HasSuffix(query, "WHERE ") {
+			query += " AND "
+		}
+		query += fmt.Sprintf("status = '%s'", v)
+	}
+
+	v, ok = m["paymentType"]
+	if ok == true && v != "" {
+		if !strings.HasSuffix(query, "WHERE ") {
+			query += " AND "
+		}
+		query += fmt.Sprintf("payment_type = '%s'", v)
+	}
+
+	//v, ok = m["datePostFrom"]
+	//if ok == true && v != "" {
+	//	if !strings.HasSuffix(query, "WHERE ") {
+	//		query += " AND "
+	//	}
+	//	query += fmt.Sprintf("date_post_from = '%s'", v)
+	//}
+	//
+	//v, ok = m["datePostTo"]
+	//if ok == true && v != "" {
+	//	if !strings.HasSuffix(query, "WHERE ") {
+	//		query += " AND "
+	//	}
+	//	query += fmt.Sprintf("date_post_to = '%s'", v)
+	//}
+
+	v, ok = m["paymentNarrative"]
+	if ok == true && v != "" {
+		if !strings.HasSuffix(query, "WHERE ") {
+			query += " AND "
+		}
+		query += fmt.Sprintf("payment_narrative LIKE '%%%s%%'", v)
+	}
+
+	query += ";"
+
+	fmt.Println(query)
 
 	if err := i.db.Select(&transactions, query); err != nil {
 		return nil, err

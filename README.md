@@ -6,10 +6,8 @@ The author tried to write this project using the principles of Clean Architectur
 
 Configurations stored in `internal/config/config.go`
 
-First Launch needs to do some configuration:
-
-- database configuration stored in `DBConfig struct`. Note! Project uses PostgreSQL 15.0 
-- port number stored in `const PortNumber (default 8000)`
+- database configuration stored in `DBConfig struct`. Note! Project uses PostgreSQL 15.0.
+- port number stored in `const PortNumber (default 8000)`.
 
 ## Launch
 
@@ -26,8 +24,11 @@ To run with migration type key -m or --migrate:
 ## Endpoints
 
 - `/upload-csv` POST method for uploading a CSV file with key `file`
-- `/get-json` GET method to get data from database in JSON. It`s supports filters with fields, examples:
-- - `transaction_id=1`
+- `/get-json` GET method to get data from database in JSON. It`s supports filters with keys, examples:
+| KEY          | example                                | note                         |
+|--------------|----------------------------------------|------------------------------|
+|transaction_id|`transaction_id=1`                      |                              |
+|terminal_id   |`terminal_id=3506,3507`                 |can be more than only one ID  |
 - - `terminal_id=3506`, can be more than only one ID: `terminal_id=3506,3507`
 - - `status=accepted`
 - - `payment_type=cash`
@@ -47,3 +48,4 @@ Swagger documentation is available on [/swagger/index.html](http://localhost:800
 - [sqlx](https://github.com/jmoiron/sqlx)
 - [pq](https://github.com/lib/pq)
 - [gocsv parser](https://github.com/gocarina/gocsv)
+- [swaggo swag](https://github.com/swaggo/swag)

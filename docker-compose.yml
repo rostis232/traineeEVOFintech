@@ -2,10 +2,21 @@ version: '3.8'
 
 services:
   trans-app:
+    restart: always
     build: ./
-    command: ./trans-app
-    ports: 8000:8000
+    command: ./trans-app -m
+    ports:
+      - "8000:8000"
     depends_on:
       - db
   db:
     restart: always
+    image: postgres:latest
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=qwerty
+    ports:
+      - "5432:5432"
+
+

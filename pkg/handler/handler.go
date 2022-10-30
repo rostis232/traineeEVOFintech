@@ -91,7 +91,7 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 // @Param date_post_from query string false "Date Post From (Example: 2022-08-17)"
 // @Param date_post_to query string false "Date Post To (Example: 2022-08-17)"
 // @Param payment_narrative query string false "Payment Narrative (Example: 'про надання послуг')"
-// @Success 200 {object} []traineeEVOFintech.TransactionT
+// @Success 200 {object} []traineeEVOFintech.Transaction
 // @Failure 400 {string}  string
 // @Router /get-json [get]
 func (h *Handler) getJson(c *gin.Context) {

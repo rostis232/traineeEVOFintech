@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  traineeEVOFintech.TransactionT:
+  traineeEVOFintech.Transaction:
     properties:
       amountOriginal:
         type: number
@@ -93,7 +93,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/traineeEVOFintech.TransactionT'
+              $ref: '#/definitions/traineeEVOFintech.Transaction'
             type: array
         "400":
           description: Bad Request

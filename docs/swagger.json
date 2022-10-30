@@ -72,7 +72,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/traineeEVOFintech.TransactionT"
+                                "$ref": "#/definitions/traineeEVOFintech.Transaction"
                             }
                         }
                     },
@@ -125,7 +125,7 @@
         }
     },
     "definitions": {
-        "traineeEVOFintech.TransactionT": {
+        "traineeEVOFintech.Transaction": {
             "type": "object",
             "properties": {
                 "amountOriginal": {

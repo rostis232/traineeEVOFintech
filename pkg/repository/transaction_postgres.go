@@ -27,7 +27,7 @@ func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transa
 		query += fmt.Sprintf("(%d, %d, %d, %d, %.2f, %.2f, %.2f, %.2f, %.2f, '%s', '%s', '%s', '%s', '%s', %d, '%s', %d, '%s', %d, '%s', '%s')",
 			t.TransactionId, t.RequestId, t.TerminalId, t.PartnerObjectId, t.AmountTotal,
 			t.AmountOriginal, t.CommissionPS, t.CommissionClient, t.CommissionProvider,
-			dateTimeToTimestampTZ(t.DateInput), dateTimeToTimestampTZ(t.DatePost),
+			t.DateInput, t.DatePost,
 			t.Status, t.PaymentType, t.PaymentNumber, t.ServiceId, t.Service, t.PayeeId, t.PayeeName, t.PayeeBankMfo,
 			t.PayeeBankAccount, t.PaymentNarrative)
 		if i == len(transactions)-1 {
@@ -45,8 +45,102 @@ func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transa
 	return nil
 }
 
-func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.TransactionT, error) {
-	var transactions []traineeEVOFintech.TransactionT
+func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
+	var transactions []traineeEVOFintech.Transaction
+	var query string
+	if len(m) == 0 {
+		query = fmt.Sprintf("SELECT * FROM transaction;")
+	} else {
+		query = fmt.Sprintf("SELECT * FROM transaction WHERE ")
+
+		v, ok := m["transactionId"]
+		if ok == true && v != "" {
+			query += fmt.Sprintf("transaction_id = %s", v)
+		}
+
+		v, ok = m["terminalId"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			arguments := strings.Split(v, ",")
+			if len(arguments) == 1 {
+				query += fmt.Sprintf("terminal_id = %s", v)
+			} else {
+				query += "terminal_id IN ("
+				for i, a := range arguments {
+					query += fmt.Sprintf("'%s'", a)
+					if i != len(arguments)-1 {
+						query += ","
+					} else {
+						query += ")"
+					}
+				}
+			}
+
+		}
+
+		v, ok = m["status"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			query += fmt.Sprintf("status = '%s'", v)
+		}
+
+		v, ok = m["paymentType"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			query += fmt.Sprintf("payment_type = '%s'", v)
+		}
+
+		v, ok = m["datePostFrom"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			date, _ := time.Parse("2006-01-02", v)
+			query += fmt.Sprintf("date_post >= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
+		}
+
+		v, ok = m["datePostTo"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			date, _ := time.Parse("2006-01-02", v)
+			date = date.Add(23 * time.Hour).Add(59 * time.Minute).Add(59 * time.Second)
+			query += fmt.Sprintf("date_post <= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
+		}
+
+		v, ok = m["paymentNarrative"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			v = strings.TrimPrefix(v, "'")
+			v = strings.TrimSuffix(v, "'")
+			query += fmt.Sprintf("payment_narrative LIKE '%%%s%%'", v)
+		}
+
+		query += ";"
+	}
+
+	if err := i.db.Select(&transactions, query); err != nil {
+		return nil, err
+	}
+
+	for i, _ := range transactions {
+		transactions[i].DBTimeToJSON()
+	}
+
+	return transactions, nil
+}
+
+func (i *TransactionPostgres) GetCSV(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
+	var transactions []traineeEVOFintech.Transaction
 	var query string
 	if len(m) == 0 {
 		query = fmt.Sprintf("SELECT * FROM transaction;")
@@ -133,99 +227,4 @@ func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.
 	}
 
 	return transactions, nil
-}
-
-func (i *TransactionPostgres) GetCSV(m map[string]string) ([]traineeEVOFintech.TransactionT, error) {
-	var transactions []traineeEVOFintech.TransactionT
-	var query string
-	if len(m) == 0 {
-		query = fmt.Sprintf("SELECT * FROM transaction;")
-	} else {
-		query = fmt.Sprintf("SELECT * FROM transaction WHERE ")
-
-		v, ok := m["transactionId"]
-		if ok == true && v != "" {
-			query += fmt.Sprintf("transaction_id = %s", v)
-		}
-
-		v, ok = m["terminalId"]
-		if ok == true && v != "" {
-			if !strings.HasSuffix(query, "WHERE ") {
-				query += " AND "
-			}
-			arguments := strings.Split(v, ",")
-			if len(arguments) == 1 {
-				query += fmt.Sprintf("terminal_id = %s", v)
-			} else {
-				query += "terminal_id IN ("
-				for i, a := range arguments {
-					query += fmt.Sprintf("'%s'", a)
-					if i != len(arguments)-1 {
-						query += ","
-					} else {
-						query += ")"
-					}
-				}
-			}
-
-		}
-
-		v, ok = m["status"]
-		if ok == true && v != "" {
-			if !strings.HasSuffix(query, "WHERE ") {
-				query += " AND "
-			}
-			query += fmt.Sprintf("status = '%s'", v)
-		}
-
-		v, ok = m["paymentType"]
-		if ok == true && v != "" {
-			if !strings.HasSuffix(query, "WHERE ") {
-				query += " AND "
-			}
-			query += fmt.Sprintf("payment_type = '%s'", v)
-		}
-
-		v, ok = m["datePostFrom"]
-		if ok == true && v != "" {
-			if !strings.HasSuffix(query, "WHERE ") {
-				query += " AND "
-			}
-			date, _ := time.Parse("2006-01-02", v)
-			query += fmt.Sprintf("date_post >= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
-		}
-
-		v, ok = m["datePostTo"]
-		if ok == true && v != "" {
-			if !strings.HasSuffix(query, "WHERE ") {
-				query += " AND "
-			}
-			date, _ := time.Parse("2006-01-02", v)
-			date = date.Add(23 * time.Hour).Add(59 * time.Minute).Add(59 * time.Second)
-			query += fmt.Sprintf("date_post <= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
-		}
-
-		v, ok = m["paymentNarrative"]
-		if ok == true && v != "" {
-			if !strings.HasSuffix(query, "WHERE ") {
-				query += " AND "
-			}
-			v = strings.TrimPrefix(v, "'")
-			v = strings.TrimSuffix(v, "'")
-			query += fmt.Sprintf("payment_narrative LIKE '%%%s%%'", v)
-		}
-
-		query += ";"
-	}
-
-	if err := i.db.Select(&transactions, query); err != nil {
-		return nil, err
-	}
-
-	return transactions, nil
-}
-
-// dateTimeToTimestampTZ converts date and time data from custom DateTime type to string
-func dateTimeToTimestampTZ(dt traineeEVOFintech.DateTime) string {
-	return dt.Format("2006-01-02 15:04:05 -07:00")
 }

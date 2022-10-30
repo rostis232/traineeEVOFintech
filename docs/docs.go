@@ -79,7 +79,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/traineeEVOFintech.TransactionT"
+                                "$ref": "#/definitions/traineeEVOFintech.Transaction"
                             }
                         }
                     },
@@ -132,7 +132,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "traineeEVOFintech.TransactionT": {
+        "traineeEVOFintech.Transaction": {
             "type": "object",
             "properties": {
                 "amountOriginal": {

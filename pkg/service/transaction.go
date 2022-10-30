@@ -17,10 +17,10 @@ func (s *TransactionService) InsertToDB(transactions []traineeEVOFintech.Transac
 	return s.repo.InsertToDB(transactions)
 }
 
-func (s *TransactionService) GetJSON(m map[string]string) ([]traineeEVOFintech.TransactionT, error) {
+func (s *TransactionService) GetJSON(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
 	return s.repo.GetJSON(m)
 }
 
-func (s *TransactionService) GetCSV(m map[string]string) ([]traineeEVOFintech.TransactionT, error) {
+func (s *TransactionService) GetCSV(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
 	return s.repo.GetCSV(m)
 }

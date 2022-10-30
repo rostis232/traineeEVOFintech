@@ -54,6 +54,52 @@ info:
   title: Trainee EVO Fintech project (Transactions App API)
   version: "1.0"
 paths:
+  /get-csv:
+    get:
+      operationId: get_csv
+      parameters:
+      - description: Transaction ID
+        in: query
+        name: transaction_id
+        type: string
+      - description: Terminal ID
+        in: query
+        name: terminal_id
+        type: string
+      - description: Status
+        in: query
+        name: status
+        type: string
+      - description: Payment Type
+        in: query
+        name: payment_type
+        type: string
+      - description: 'Date Post From (Example: 2022-08-17)'
+        in: query
+        name: date_post_from
+        type: string
+      - description: 'Date Post To (Example: 2022-08-17)'
+        in: query
+        name: date_post_to
+        type: string
+      - description: 'Payment Narrative (Example: ''про надання послуг'')'
+        in: query
+        name: payment_narrative
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: getCSV
+      tags:
+      - Transactions
   /get-json:
     get:
       operationId: get_json

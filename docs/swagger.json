@@ -12,6 +12,76 @@
     "host": "localhost:8000",
     "basePath": "/",
     "paths": {
+        "/get-csv": {
+            "get": {
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "getCSV",
+                "operationId": "get_csv",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Transaction ID",
+                        "name": "transaction_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Terminal ID",
+                        "name": "terminal_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Payment Type",
+                        "name": "payment_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date Post From (Example: 2022-08-17)",
+                        "name": "date_post_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date Post To (Example: 2022-08-17)",
+                        "name": "date_post_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Payment Narrative (Example: 'про надання послуг')",
+                        "name": "payment_narrative",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/get-json": {
             "get": {
                 "produces": [

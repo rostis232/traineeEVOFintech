@@ -81,7 +81,7 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 
 // @Summary getJSON
 // @Tags Transactions
-// @Descriptions get JSON
+// @Descriptions get response in JSON format
 // @ID get_json
 // @Produce json
 // @Param transaction_id query string false "Transaction ID"
@@ -126,6 +126,21 @@ func (h *Handler) getJson(c *gin.Context) {
 	}
 }
 
+// @Summary getCSV
+// @Tags Transactions
+// @Descriptions get response in CSV format
+// @ID get_csv
+// @Produce plain
+// @Param transaction_id query string false "Transaction ID"
+// @Param terminal_id query string false "Terminal ID"
+// @Param status query string false "Status"
+// @Param payment_type query string false "Payment Type"
+// @Param date_post_from query string false "Date Post From (Example: 2022-08-17)"
+// @Param date_post_to query string false "Date Post To (Example: 2022-08-17)"
+// @Param payment_narrative query string false "Payment Narrative (Example: 'про надання послуг')"
+// @Success 200 {string}  string
+// @Failure 400 {string}  string
+// @Router /get-csv [get]
 func (h *Handler) getCsv(c *gin.Context) {
 	var params = map[string]string{}
 	if c.Query("transaction_id") != "" {
@@ -158,12 +173,12 @@ func (h *Handler) getCsv(c *gin.Context) {
 		//err = gocsv.MarshalFile(&transactions, clientsFile) // Use this to save the CSV back to the file
 		if err != nil {
 			c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
+		} else {
+			c.JSON(http.StatusOK, csvContent)
 		}
-		fmt.Println(csvContent) // Display all clients as CSV string
 	}
 }
 
-// TODO: needs to return an error?
 func csvToStruct(timestamp string) ([]traineeEVOFintech.Transaction, error) {
 	file, err := os.Open(fmt.Sprintf("./uploads/%s", timestamp+".csv"))
 	if err != nil {

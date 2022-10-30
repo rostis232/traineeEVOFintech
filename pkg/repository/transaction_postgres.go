@@ -226,5 +226,9 @@ func (i *TransactionPostgres) GetCSV(m map[string]string) ([]traineeEVOFintech.T
 		return nil, err
 	}
 
+	for i, _ := range transactions {
+		transactions[i].DBTimeToJSON()
+	}
+
 	return transactions, nil
 }

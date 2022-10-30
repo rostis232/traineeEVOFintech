@@ -26,9 +26,9 @@ To run with migration type key -m or --migrate:
 - `/upload-csv` POST method for uploading a CSV file with key `file`
 - `/get-json` GET method to get data from database in JSON format. 
 - `/get-csv` GET method to get data from database in CSV format.
-- With `/get-json` & `/get-csv`  can be used filters with keys, examples:
+With `/get-json` & `/get-csv`  can be used filters with keys, examples:
 
-| KEY               | example                                        | note                                   |
+| Key               | Example                                        | Note                                   |
 |-------------------|------------------------------------------------|----------------------------------------|
 | transaction_id    | `transaction_id=1`                             |                                        |
 | terminal_id       | `terminal_id=3506,3507`                        | can be more than only one ID           |
@@ -38,7 +38,7 @@ To run with migration type key -m or --migrate:
 | date_post_to      | `date_post_to=2022-08-23`                      |                                        |
 | payment_narrative | `payment_narrative='А11/27123 від 19.11.2020'` | can search by partially specified data |
 
-- It can be used none of them, one of them, several filters or all filters at once:
+It can be used none of them, one of them, several filters or all filters at once:
 
 ```/get-json?terminal_id=3518,3506,3507&payment_narrative='ослуг А11/27122 від'&date_post_to=2022-08-17&date_post_from=2022-08-13```
 

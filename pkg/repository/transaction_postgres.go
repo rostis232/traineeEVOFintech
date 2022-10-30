@@ -232,3 +232,7 @@ func (i *TransactionPostgres) GetCSV(m map[string]string) ([]traineeEVOFintech.T
 
 	return transactions, nil
 }
+
+func (i *TransactionPostgres) GetCSVFile(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
+	return nil, nil
+}

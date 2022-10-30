@@ -27,9 +27,11 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
-	router.GET("/get-json", h.getJson)
-	router.GET("/get-csv", h.getCsv)
-	router.POST("/upload-csv", h.uploadCsv)
+	router.GET("/get-json", h.getJSON)
+	router.GET("/get-csv", h.getCSV)
+	router.GET("/get-csv-file", h.getCSVFile)
+	router.POST("/upload-csv", h.uploadCSV)
+
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return router
 }
@@ -44,7 +46,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 // @Success 200 {string}  string
 // @Failure 400 {string}  string
 // @Router /upload-csv [post]
-func (h *Handler) uploadCsv(c *gin.Context) {
+func (h *Handler) uploadCSV(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		log.Println(err)
@@ -94,7 +96,7 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 // @Success 200 {object} []traineeEVOFintech.Transaction
 // @Failure 400 {string}  string
 // @Router /get-json [get]
-func (h *Handler) getJson(c *gin.Context) {
+func (h *Handler) getJSON(c *gin.Context) {
 	var params = map[string]string{}
 	if c.Query("transaction_id") != "" {
 		params["transactionId"] = c.Query("transaction_id")
@@ -141,7 +143,7 @@ func (h *Handler) getJson(c *gin.Context) {
 // @Success 200 {string}  string
 // @Failure 400 {string}  string
 // @Router /get-csv [get]
-func (h *Handler) getCsv(c *gin.Context) {
+func (h *Handler) getCSV(c *gin.Context) {
 	var params = map[string]string{}
 	if c.Query("transaction_id") != "" {
 		params["transactionId"] = c.Query("transaction_id")
@@ -166,6 +168,44 @@ func (h *Handler) getCsv(c *gin.Context) {
 	}
 
 	transactions, err := h.services.Transaction.GetCSV(params)
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
+	} else {
+		csvContent, err := gocsv.MarshalString(&transactions) // Get all clients as CSV string
+		//err = gocsv.MarshalFile(&transactions, clientsFile) // Use this to save the CSV back to the file
+		if err != nil {
+			c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
+		} else {
+			c.String(http.StatusOK, csvContent)
+		}
+	}
+}
+
+func (h *Handler) getCSVFile(c *gin.Context) {
+	var params = map[string]string{}
+	if c.Query("transaction_id") != "" {
+		params["transactionId"] = c.Query("transaction_id")
+	}
+	if c.Query("terminal_id") != "" {
+		params["terminalId"] = c.Query("terminal_id") //Can be more than only one ID
+	}
+	if c.Query("status") != "" {
+		params["status"] = c.Query("status")
+	}
+	if c.Query("payment_type") != "" {
+		params["paymentType"] = c.Query("payment_type")
+	}
+	if c.Query("date_post_from") != "" {
+		params["datePostFrom"] = c.Query("date_post_from")
+	}
+	if c.Query("date_post_to") != "" {
+		params["datePostTo"] = c.Query("date_post_to")
+	}
+	if c.Query("payment_narrative") != "" {
+		params["paymentNarrative"] = c.Query("payment_narrative")
+	}
+
+	transactions, err := h.services.Transaction.GetCSVFile(params)
 	if err != nil {
 		c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
 	} else {

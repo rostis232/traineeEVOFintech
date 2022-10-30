@@ -24,3 +24,7 @@ func (s *TransactionService) GetJSON(m map[string]string) ([]traineeEVOFintech.T
 func (s *TransactionService) GetCSV(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
 	return s.repo.GetCSV(m)
 }
+
+func (s *TransactionService) GetCSVFile(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
+	return s.repo.GetCSVFile(m)
+}

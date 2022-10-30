@@ -79,15 +79,21 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 
 }
 
-// @Summary getJON
+// @Summary getJSON
 // @Tags Transactions
 // @Descriptions get JSON
 // @ID get_json
 // @Produce json
 // @Param transaction_id query string false "Transaction ID"
-// @Success 200 {object} []traineeEVOFintech.Transaction
+// @Param terminal_id query string false "Terminal ID"
+// @Param status query string false "Status"
+// @Param payment_type query string false "Payment Type"
+// @Param date_post_from query string false "Date Post From (Example: 2022-08-17)"
+// @Param date_post_to query string false "Date Post To (Example: 2022-08-17)"
+// @Param payment_narrative query string false "Payment Narrative (Example: 'про надання послуг')"
+// @Success 200 {object} []traineeEVOFintech.TransactionT
 // @Failure 400 {string}  string
-// @Router /upload-csv [get]
+// @Router /get-json [get]
 func (h *Handler) getJson(c *gin.Context) {
 	var params = map[string]string{}
 	if c.Query("transaction_id") != "" {

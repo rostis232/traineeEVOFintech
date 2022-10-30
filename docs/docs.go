@@ -19,7 +19,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/upload-csv": {
+        "/get-json": {
             "get": {
                 "produces": [
                     "application/json"
@@ -27,13 +27,49 @@ const docTemplate = `{
                 "tags": [
                     "Transactions"
                 ],
-                "summary": "getJON",
+                "summary": "getJSON",
                 "operationId": "get_json",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Transaction ID",
                         "name": "transaction_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Terminal ID",
+                        "name": "terminal_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Payment Type",
+                        "name": "payment_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date Post From (Example: 2022-08-17)",
+                        "name": "date_post_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date Post To (Example: 2022-08-17)",
+                        "name": "date_post_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Payment Narrative (Example: 'про надання послуг')",
+                        "name": "payment_narrative",
                         "in": "query"
                     }
                 ],
@@ -43,7 +79,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/traineeEVOFintech.Transaction"
+                                "$ref": "#/definitions/traineeEVOFintech.TransactionT"
                             }
                         }
                     },
@@ -54,7 +90,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/upload-csv": {
             "post": {
                 "consumes": [
                     "multipart/form-data"
@@ -94,15 +132,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "traineeEVOFintech.DateTime": {
-            "type": "object",
-            "properties": {
-                "time.Time": {
-                    "type": "string"
-                }
-            }
-        },
-        "traineeEVOFintech.Transaction": {
+        "traineeEVOFintech.TransactionT": {
             "type": "object",
             "properties": {
                 "amountOriginal": {
@@ -121,10 +151,10 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "dateInput": {
-                    "$ref": "#/definitions/traineeEVOFintech.DateTime"
+                    "type": "string"
                 },
                 "datePost": {
-                    "$ref": "#/definitions/traineeEVOFintech.DateTime"
+                    "type": "string"
                 },
                 "partnerObjectId": {
                     "type": "integer"

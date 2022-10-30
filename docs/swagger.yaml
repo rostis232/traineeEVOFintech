@@ -1,11 +1,6 @@
 basePath: /
 definitions:
-  traineeEVOFintech.DateTime:
-    properties:
-      time.Time:
-        type: string
-    type: object
-  traineeEVOFintech.Transaction:
+  traineeEVOFintech.TransactionT:
     properties:
       amountOriginal:
         type: number
@@ -18,9 +13,9 @@ definitions:
       commissionProvider:
         type: number
       dateInput:
-        $ref: '#/definitions/traineeEVOFintech.DateTime'
+        type: string
       datePost:
-        $ref: '#/definitions/traineeEVOFintech.DateTime'
+        type: string
       partnerObjectId:
         type: integer
       payeeBankAccount:
@@ -59,13 +54,37 @@ info:
   title: Trainee EVO Fintech project (Transactions App API)
   version: "1.0"
 paths:
-  /upload-csv:
+  /get-json:
     get:
       operationId: get_json
       parameters:
       - description: Transaction ID
         in: query
         name: transaction_id
+        type: string
+      - description: Terminal ID
+        in: query
+        name: terminal_id
+        type: string
+      - description: Status
+        in: query
+        name: status
+        type: string
+      - description: Payment Type
+        in: query
+        name: payment_type
+        type: string
+      - description: 'Date Post From (Example: 2022-08-17)'
+        in: query
+        name: date_post_from
+        type: string
+      - description: 'Date Post To (Example: 2022-08-17)'
+        in: query
+        name: date_post_to
+        type: string
+      - description: 'Payment Narrative (Example: ''про надання послуг'')'
+        in: query
+        name: payment_narrative
         type: string
       produces:
       - application/json
@@ -74,15 +93,16 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/traineeEVOFintech.Transaction'
+              $ref: '#/definitions/traineeEVOFintech.TransactionT'
             type: array
         "400":
           description: Bad Request
           schema:
             type: string
-      summary: getJON
+      summary: getJSON
       tags:
       - Transactions
+  /upload-csv:
     post:
       consumes:
       - multipart/form-data

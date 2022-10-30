@@ -24,7 +24,9 @@ To run with migration type key -m or --migrate:
 ## Endpoints
 
 - `/upload-csv` POST method for uploading a CSV file with key `file`
-- `/get-json` GET method to get data from database in JSON. It's supports filters with keys, examples:
+- `/get-json` GET method to get data from database in JSON format. 
+- `/get-csv` GET method to get data from database in CSV format.
+- With `/get-json` & `/get-csv`  can be used filters with keys, examples:
 
 | KEY               | example                                        | note                                   |
 |-------------------|------------------------------------------------|----------------------------------------|

@@ -30,6 +30,14 @@ func NewPostgresDB(cfg DBConfig) (*sqlx.DB, error) {
 	for _, arg := range os.Args[1:] {
 		if arg == "-m" || arg == "--migrate" {
 			log.Println("Make Migrations...")
+			//Для використання існуючого коннекту необхідно використати
+			//driver, err := postgres.WithInstance(db, &postgres.Config{})
+			//    m, err := migrate.NewWithDatabaseInstance(
+			//        "file:///migrations",
+			//        "postgres", driver)
+			//    m.Up() // or m.Step(2) if you want to explicitly set the number of migrations to run
+			//}
+			//У sqlx.DB є поле типу sql.DB для цих випадків
 			m, err := migrate.New("file://./schema", "postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable")
 			if err != nil {
 				log.Println(err)

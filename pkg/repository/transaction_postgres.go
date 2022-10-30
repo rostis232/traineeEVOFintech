@@ -116,6 +116,8 @@ func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.
 		if !strings.HasSuffix(query, "WHERE ") {
 			query += " AND "
 		}
+		v = strings.TrimPrefix(v, "'")
+		v = strings.TrimSuffix(v, "'")
 		query += fmt.Sprintf("payment_narrative LIKE '%%%s%%'", v)
 	}
 

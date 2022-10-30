@@ -71,7 +71,6 @@ func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.
 				} else {
 					query += ")"
 				}
-
 			}
 		}
 

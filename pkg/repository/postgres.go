@@ -3,6 +3,8 @@ package repository
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"log"
+	"os"
 )
 
 type DBConfig struct {
@@ -19,6 +21,12 @@ func NewPostgresDB(cfg DBConfig) (*sqlx.DB, error) {
 		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
 	if err != nil {
 		return nil, err
+	}
+
+	for _, arg := range os.Args[1:] {
+		if arg == "-m" || arg == "--migrate" {
+			log.Println("Make Migrations...")
+		}
 	}
 
 	err = db.Ping()

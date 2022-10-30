@@ -1,5 +1,6 @@
 # Project for Trainee EVO Fintech (second stage)
-Program accepts CSV file and parses it's data to database. Data can be gotten from database with filters in JSON. CSV example stored in `csv_example/example.csv`
+Program accepts CSV file and parses it's data to database. Data can be gotten from database with filters in JSON. CSV example stored in `csv_example/example.csv`.
+The author tried to write this project using the principles of Clean Architecture and Dependency Injection.
 
 ## Configuration
 
@@ -33,10 +34,10 @@ To run with migration type key -m or --migrate:
 - - `date_post_from=2022-08-12`
 - - `date_post_to=2022-08-23`
 - - `payment_narrative='А11/27123 від 19.11.2020'`, can search by partially specified data
-- - It can be used one of them, several filters or all filters at once: `/get-json?terminal_id=3518,3506,3507&payment_narrative='ослуг А11/27122 від'&date_post_to=2022-08-17&date_post_from=2022-08-13`
+- - It can be used none of them, one of them, several filters or all filters at once: `/get-json?terminal_id=3518,3506,3507&payment_narrative='ослуг А11/27122 від'&date_post_to=2022-08-17&date_post_from=2022-08-13`
 
 ## Documentation 
-Swagger documentation is available on `/swagger/index.html`
+Swagger documentation is available on [/swagger/index.html](http://localhost:8000/swagger/index.html)
 
 ## Project uses:
 - Go version 1.19.2

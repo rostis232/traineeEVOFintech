@@ -1,0 +1,15 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API Server for Transactions Application",
+        "title": "Trainee EVO Fintech project (Transactions App API)",
+        "contact": {
+            "name": "Rostyslav Pylypiv",
+            "email": "rostislav.pylypiv@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8000",
+    "basePath": "/",
+    "paths": {}
+}

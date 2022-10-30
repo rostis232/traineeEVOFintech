@@ -1,0 +1,11 @@
+basePath: /
+host: localhost:8000
+info:
+  contact:
+    email: rostislav.pylypiv@gmail.com
+    name: Rostyslav Pylypiv
+  description: API Server for Transactions Application
+  title: Trainee EVO Fintech project (Transactions App API)
+  version: "1.0"
+paths: {}
+swagger: "2.0"

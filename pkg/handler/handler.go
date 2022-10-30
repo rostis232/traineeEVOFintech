@@ -5,7 +5,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gocarina/gocsv"
 	"github.com/rostis232/traineeEVOFintech"
+	_ "github.com/rostis232/traineeEVOFintech/docs"
 	"github.com/rostis232/traineeEVOFintech/pkg/service"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os"
@@ -26,10 +29,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router.GET("/get-json", h.getJson)
 	router.GET("/get-csv", h.getCsv)
 	router.POST("/upload-csv", h.uploadCsv)
-
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return router
 }
 
+// @Summary uploadCSV
+// @Descriptions upload CSV
+// @ID upload_csv
+// @Accept mpfd
+// @Produce plain
+// @Param file body string true "CSV file"
 func (h *Handler) uploadCsv(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {

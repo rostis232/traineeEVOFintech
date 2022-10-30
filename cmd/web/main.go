@@ -11,6 +11,16 @@ import (
 	"log"
 )
 
+// @title Trainee EVO Fintech project (Transactions App API)
+// @version 1.0
+// @description API Server for Transactions Application
+
+// @contact.name Rostyslav Pylypiv
+// @contact.email rostislav.pylypiv@gmail.com
+
+// @host localhost:8000
+// @BasePath /
+
 func main() {
 	fmt.Printf("Starting application on port %s\n", config.PortNumber)
 

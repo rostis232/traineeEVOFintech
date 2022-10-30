@@ -32,7 +32,7 @@ To run with migration type key -m or --migrate:
 - - `payment_type=cash`
 - - `date_post_from=2022-08-12`
 - - `date_post_to=2022-08-23`
-- - `payment_narrative="А11/27123 від 19.11.2020"`
+- - `payment_narrative='А11/27123 від 19.11.2020'`, can search by partially specified data
 
 ## Project uses:
 - Go version 1.19.2

@@ -2,7 +2,11 @@ package repository
 
 import (
 	"fmt"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"log"
 	"os"
 )
@@ -26,6 +30,16 @@ func NewPostgresDB(cfg DBConfig) (*sqlx.DB, error) {
 	for _, arg := range os.Args[1:] {
 		if arg == "-m" || arg == "--migrate" {
 			log.Println("Make Migrations...")
+			m, err := migrate.New("file://./schema", "postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable")
+			if err != nil {
+				log.Println(err)
+			} else {
+				if err := m.Up(); err != nil {
+					log.Printf("Migrations error: '%s'\n", err)
+				} else {
+					log.Println("Migrations are successful")
+				}
+			}
 		}
 	}
 

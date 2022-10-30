@@ -236,7 +236,6 @@ func (h *Handler) getCSVFile(c *gin.Context) {
 		if err != nil {
 			c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
 		} else {
-			c.String(http.StatusOK, "Downloading begins...")
 			c.FileAttachment(fmt.Sprintf("./created_csv/%s", timestamp+".csv"), "export.csv")
 		}
 	}

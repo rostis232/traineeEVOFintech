@@ -171,8 +171,7 @@ func (h *Handler) getCSV(c *gin.Context) {
 	if err != nil {
 		c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
 	} else {
-		csvContent, err := gocsv.MarshalString(&transactions) // Get all clients as CSV string
-		//err = gocsv.MarshalFile(&transactions, clientsFile) // Use this to save the CSV back to the file
+		csvContent, err := gocsv.MarshalString(&transactions)
 		if err != nil {
 			c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
 		} else {
@@ -181,6 +180,21 @@ func (h *Handler) getCSV(c *gin.Context) {
 	}
 }
 
+// @Summary getCSVFile
+// @Tags Transactions
+// @Descriptions get generated CSV file in response
+// @ID get_csv_file
+// @Produce plain
+// @Param transaction_id query string false "Transaction ID"
+// @Param terminal_id query string false "Terminal ID"
+// @Param status query string false "Status"
+// @Param payment_type query string false "Payment Type"
+// @Param date_post_from query string false "Date Post From (Example: 2022-08-17)"
+// @Param date_post_to query string false "Date Post To (Example: 2022-08-17)"
+// @Param payment_narrative query string false "Payment Narrative (Example: 'про надання послуг')"
+// @Success 200 {string}  string
+// @Failure 400 {string}  string
+// @Router /get-csv-file [get]
 func (h *Handler) getCSVFile(c *gin.Context) {
 	var params = map[string]string{}
 	if c.Query("transaction_id") != "" {
@@ -209,12 +223,21 @@ func (h *Handler) getCSVFile(c *gin.Context) {
 	if err != nil {
 		c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
 	} else {
-		csvContent, err := gocsv.MarshalString(&transactions) // Get all clients as CSV string
-		//err = gocsv.MarshalFile(&transactions, clientsFile) // Use this to save the CSV back to the file
+		timestamp := time.Now().Format("02-01-06_15:04:05")
+		os.Create(fmt.Sprintf("./created_csv/%s", timestamp+".csv"))
+		file, err := os.OpenFile(fmt.Sprintf("./created_csv/%s", timestamp+".csv"), os.O_RDWR|os.O_CREATE, os.ModePerm)
+		if err != nil {
+			c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
+		}
+
+		defer file.Close()
+
+		err = gocsv.MarshalFile(&transactions, file)
 		if err != nil {
 			c.String(http.StatusBadRequest, fmt.Sprintf("Error: '%s'", err))
 		} else {
-			c.JSON(http.StatusOK, csvContent)
+			c.String(http.StatusOK, "Downloading begins...")
+			c.FileAttachment(fmt.Sprintf("./created_csv/%s", timestamp+".csv"), "export.csv")
 		}
 	}
 }

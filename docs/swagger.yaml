@@ -1,4 +1,55 @@
 basePath: /
+definitions:
+  traineeEVOFintech.DateTime:
+    properties:
+      time.Time:
+        type: string
+    type: object
+  traineeEVOFintech.Transaction:
+    properties:
+      amountOriginal:
+        type: number
+      amountTotal:
+        type: number
+      commissionClient:
+        type: number
+      commissionPS:
+        type: number
+      commissionProvider:
+        type: number
+      dateInput:
+        $ref: '#/definitions/traineeEVOFintech.DateTime'
+      datePost:
+        $ref: '#/definitions/traineeEVOFintech.DateTime'
+      partnerObjectId:
+        type: integer
+      payeeBankAccount:
+        type: string
+      payeeBankMfo:
+        type: integer
+      payeeId:
+        type: integer
+      payeeName:
+        type: string
+      paymentNarrative:
+        type: string
+      paymentNumber:
+        type: string
+      paymentType:
+        type: string
+      requestId:
+        type: integer
+      service:
+        type: string
+      serviceId:
+        type: integer
+      status:
+        type: string
+      terminalId:
+        type: integer
+      transactionId:
+        type: integer
+    type: object
 host: localhost:8000
 info:
   contact:
@@ -7,5 +58,53 @@ info:
   description: API Server for Transactions Application
   title: Trainee EVO Fintech project (Transactions App API)
   version: "1.0"
-paths: {}
+paths:
+  /upload-csv:
+    get:
+      operationId: get_json
+      parameters:
+      - description: Transaction ID
+        in: query
+        name: transaction_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/traineeEVOFintech.Transaction'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: getJON
+      tags:
+      - Transactions
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: upload_csv
+      parameters:
+      - description: CSV file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: uploadCSV
+      tags:
+      - Transactions
 swagger: "2.0"

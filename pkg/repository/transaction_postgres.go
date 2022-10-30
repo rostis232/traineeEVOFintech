@@ -47,81 +47,86 @@ func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transa
 
 func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.TransactionT, error) {
 	var transactions []traineeEVOFintech.TransactionT
-	query := fmt.Sprintf("SELECT * FROM transaction WHERE ")
+	var query string
+	if len(m) == 0 {
+		query = fmt.Sprintf("SELECT * FROM transaction;")
+	} else {
+		query = fmt.Sprintf("SELECT * FROM transaction WHERE ")
 
-	v, ok := m["transactionId"]
-	if ok == true && v != "" {
-		query += fmt.Sprintf("transaction_id = %s", v)
-	}
-
-	v, ok = m["terminalId"]
-	if ok == true && v != "" {
-		if !strings.HasSuffix(query, "WHERE ") {
-			query += " AND "
+		v, ok := m["transactionId"]
+		if ok == true && v != "" {
+			query += fmt.Sprintf("transaction_id = %s", v)
 		}
-		arguments := strings.Split(v, ",")
-		if len(arguments) == 1 {
-			query += fmt.Sprintf("terminal_id = %s", v)
-		} else {
-			query += "terminal_id IN ("
-			for i, a := range arguments {
-				query += fmt.Sprintf("'%s'", a)
-				if i != len(arguments)-1 {
-					query += ","
-				} else {
-					query += ")"
+
+		v, ok = m["terminalId"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			arguments := strings.Split(v, ",")
+			if len(arguments) == 1 {
+				query += fmt.Sprintf("terminal_id = %s", v)
+			} else {
+				query += "terminal_id IN ("
+				for i, a := range arguments {
+					query += fmt.Sprintf("'%s'", a)
+					if i != len(arguments)-1 {
+						query += ","
+					} else {
+						query += ")"
+					}
 				}
 			}
+
 		}
 
-	}
-
-	v, ok = m["status"]
-	if ok == true && v != "" {
-		if !strings.HasSuffix(query, "WHERE ") {
-			query += " AND "
+		v, ok = m["status"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			query += fmt.Sprintf("status = '%s'", v)
 		}
-		query += fmt.Sprintf("status = '%s'", v)
-	}
 
-	v, ok = m["paymentType"]
-	if ok == true && v != "" {
-		if !strings.HasSuffix(query, "WHERE ") {
-			query += " AND "
+		v, ok = m["paymentType"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			query += fmt.Sprintf("payment_type = '%s'", v)
 		}
-		query += fmt.Sprintf("payment_type = '%s'", v)
-	}
 
-	v, ok = m["datePostFrom"]
-	if ok == true && v != "" {
-		if !strings.HasSuffix(query, "WHERE ") {
-			query += " AND "
+		v, ok = m["datePostFrom"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			date, _ := time.Parse("2006-01-02", v)
+			query += fmt.Sprintf("date_post >= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
 		}
-		date, _ := time.Parse("2006-01-02", v)
-		query += fmt.Sprintf("date_post >= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
-	}
 
-	v, ok = m["datePostTo"]
-	if ok == true && v != "" {
-		if !strings.HasSuffix(query, "WHERE ") {
-			query += " AND "
+		v, ok = m["datePostTo"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			date, _ := time.Parse("2006-01-02", v)
+			date = date.Add(23 * time.Hour).Add(59 * time.Minute).Add(59 * time.Second)
+			query += fmt.Sprintf("date_post <= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
 		}
-		date, _ := time.Parse("2006-01-02", v)
-		date = date.Add(23 * time.Hour).Add(59 * time.Minute).Add(59 * time.Second)
-		query += fmt.Sprintf("date_post <= '%s'", date.Format("2006-01-02 15:04:05 -07:00"))
-	}
 
-	v, ok = m["paymentNarrative"]
-	if ok == true && v != "" {
-		if !strings.HasSuffix(query, "WHERE ") {
-			query += " AND "
+		v, ok = m["paymentNarrative"]
+		if ok == true && v != "" {
+			if !strings.HasSuffix(query, "WHERE ") {
+				query += " AND "
+			}
+			v = strings.TrimPrefix(v, "'")
+			v = strings.TrimSuffix(v, "'")
+			query += fmt.Sprintf("payment_narrative LIKE '%%%s%%'", v)
 		}
-		v = strings.TrimPrefix(v, "'")
-		v = strings.TrimSuffix(v, "'")
-		query += fmt.Sprintf("payment_narrative LIKE '%%%s%%'", v)
-	}
 
-	query += ";"
+		query += ";"
+	}
 
 	fmt.Println(query)
 

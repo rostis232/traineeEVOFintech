@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -34,18 +35,27 @@ func (h *Handler) InitRoutes() *gin.Engine {
 }
 
 // @Summary uploadCSV
+// @Tags Transactions
 // @Descriptions upload CSV
 // @ID upload_csv
 // @Accept mpfd
 // @Produce plain
-// @Param file body string true "CSV file"
+// @Param file formData file true "CSV file"
+// @Success 200 {string}  string
+// @Failure 400 {string}  string
+// @Router /upload-csv [post]
 func (h *Handler) uploadCsv(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		log.Println(err)
 	}
 
-	//TODO: filename validation?
+	//Filename verification
+	if !strings.HasSuffix(file.Filename, ".csv") {
+		c.String(http.StatusBadRequest, "File extension isn`t CSV")
+		return
+	}
+
 	timestamp := time.Now().Format("02-01-06_15:04:05")
 	err = c.SaveUploadedFile(file, fmt.Sprintf("./uploads/%s", timestamp+".csv"))
 	if err != nil {
@@ -69,15 +79,38 @@ func (h *Handler) uploadCsv(c *gin.Context) {
 
 }
 
+// @Summary getJON
+// @Tags Transactions
+// @Descriptions get JSON
+// @ID get_json
+// @Produce json
+// @Param transaction_id query string false "Transaction ID"
+// @Success 200 {object} []traineeEVOFintech.Transaction
+// @Failure 400 {string}  string
+// @Router /upload-csv [get]
 func (h *Handler) getJson(c *gin.Context) {
 	var params = map[string]string{}
-	params["transactionId"] = c.Query("transaction_id")
-	params["terminalId"] = c.Query("terminal_id") //Can be more than only one ID
-	params["status"] = c.Query("status")
-	params["paymentType"] = c.Query("payment_type")
-	params["datePostFrom"] = c.Query("date_post_from")
-	params["datePostTo"] = c.Query("date_post_to")
-	params["paymentNarrative"] = c.Query("payment_narrative")
+	if c.Query("transaction_id") != "" {
+		params["transactionId"] = c.Query("transaction_id")
+	}
+	if c.Query("terminal_id") != "" {
+		params["terminalId"] = c.Query("terminal_id") //Can be more than only one ID
+	}
+	if c.Query("status") != "" {
+		params["status"] = c.Query("status")
+	}
+	if c.Query("payment_type") != "" {
+		params["paymentType"] = c.Query("payment_type")
+	}
+	if c.Query("date_post_from") != "" {
+		params["datePostFrom"] = c.Query("date_post_from")
+	}
+	if c.Query("date_post_to") != "" {
+		params["datePostTo"] = c.Query("date_post_to")
+	}
+	if c.Query("payment_narrative") != "" {
+		params["paymentNarrative"] = c.Query("payment_narrative")
+	}
 
 	transactions, err := h.services.Transaction.GetJSON(params)
 	if err != nil {

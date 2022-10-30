@@ -8,7 +8,6 @@ import (
 type Transaction interface {
 	InsertToDB(transactions []traineeEVOFintech.Transaction) error
 	GetJSON(m map[string]string) ([]traineeEVOFintech.Transaction, error)
-	GetCSV(m map[string]string) ([]traineeEVOFintech.Transaction, error)
 	GetCSVFile(m map[string]string) ([]traineeEVOFintech.Transaction, error)
 }
 

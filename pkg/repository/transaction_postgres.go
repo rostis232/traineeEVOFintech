@@ -62,22 +62,6 @@ func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.
 }
 
 // GetJSON collect data from DB uses keys stored in map[string]string and return []traineeEVOFintech.Transaction
-func (i *TransactionPostgres) GetCSV(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
-	var transactions []traineeEVOFintech.Transaction
-	query := createQuery(m)
-
-	if err := i.db.Select(&transactions, query); err != nil {
-		return nil, err
-	}
-
-	for i, _ := range transactions {
-		transactions[i].DBTimeToJSON()
-	}
-
-	return transactions, nil
-}
-
-// GetJSON collect data from DB uses keys stored in map[string]string and return []traineeEVOFintech.Transaction
 func (i *TransactionPostgres) GetCSVFile(m map[string]string) ([]traineeEVOFintech.Transaction, error) {
 	var transactions []traineeEVOFintech.Transaction
 	query := createQuery(m)

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  trans-app:
+    build: ./
+    command: ./trans-app
+    ports: 8000:8000
+    depends_on:
+      - db
+  db:
+    restart: always

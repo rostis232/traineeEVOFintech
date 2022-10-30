@@ -1,5 +1,5 @@
 # Project for Trainee EVO Fintech (second stage)
-Program accepts CSV file and parses it`s data to data base. Data can be gotten from data base with filters in JSON.
+Program accepts CSV file and parses it's data to database. Data can be gotten from database with filters in JSON. CSV example stored in `csv_example/example.csv`
 
 ## Configuration
 
@@ -7,7 +7,7 @@ Configurations stored in `internal/config/config.go`
 
 First Launch needs to do some configuration:
 
-- Data Base configuration stored in `DBConfig struct`. Note! Project uses PostgreSQL 15.0 
+- database configuration stored in `DBConfig struct`. Note! Project uses PostgreSQL 15.0 
 - port number stored in `const PortNumber (default 8000)`
 
 ## Launch

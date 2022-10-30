@@ -36,7 +36,9 @@ To run with migration type key -m or --migrate:
 | date_post_to      | `date_post_to=2022-08-23`                      |                                        |
 | payment_narrative | `payment_narrative='А11/27123 від 19.11.2020'` | can search by partially specified data |
 
-- It can be used none of them, one of them, several filters or all filters at once: `/get-json?terminal_id=3518,3506,3507&payment_narrative='ослуг А11/27122 від'&date_post_to=2022-08-17&date_post_from=2022-08-13`
+- It can be used none of them, one of them, several filters or all filters at once:
+
+```/get-json?terminal_id=3518,3506,3507&payment_narrative='ослуг А11/27122 від'&date_post_to=2022-08-17&date_post_from=2022-08-13```
 
 ## Documentation 
 Swagger documentation is available on [/swagger/index.html](http://localhost:8000/swagger/index.html)

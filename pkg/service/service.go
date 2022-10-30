@@ -8,6 +8,7 @@ import (
 type Transaction interface {
 	InsertToDB(transactions []traineeEVOFintech.Transaction) error
 	GetJSON(m map[string]string) ([]traineeEVOFintech.TransactionT, error)
+	GetCSV(m map[string]string) ([]traineeEVOFintech.TransactionT, error)
 }
 
 type Service struct {

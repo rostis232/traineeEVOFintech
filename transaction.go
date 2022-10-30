@@ -11,6 +11,10 @@ func (date *DateTime) UnmarshalCSV(csv string) (err error) {
 	return err
 }
 
+func (date *DateTime) MarshalCSV() (string, error) {
+	return date.Time.Format("2006-01-02 15:04:05"), nil
+}
+
 type Transaction struct {
 	TransactionId      uint     `db:"transaction_id" csv:"TransactionId"`
 	RequestId          uint     `db:"request_id" csv:"RequestId"`

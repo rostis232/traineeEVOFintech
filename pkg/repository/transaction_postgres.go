@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/rostis232/traineeEVOFintech"
+	"log"
 	"strings"
 	"time"
 )
@@ -18,30 +19,73 @@ func NewTransactionPostgres(db *sqlx.DB) *TransactionPostgres {
 
 // InsertToDB inserts data from []traineeEVOFintech.Transaction to DB
 func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transaction) error {
-	query := "INSERT INTO transaction (transaction_id, request_id, terminal_id, partner_object_id, amount_total, " +
-		"amount_original, commission_ps, commission_client, commission_provider, date_input, date_post, status, " +
-		"payment_type, payment_number, service_id, service, payee_id, payee_name, payee_bank_mfo, payee_bank_account, " +
-		"payment_narrative) VALUES "
 
-	for i, t := range transactions {
-		query += fmt.Sprintf("(%d, %d, %d, %d, %.2f, %.2f, %.2f, %.2f, %.2f, '%s', '%s', '%s', '%s', '%s', %d, '%s', %d, '%s', %d, '%s', '%s')",
-			t.TransactionId, t.RequestId, t.TerminalId, t.PartnerObjectId, t.AmountTotal,
-			t.AmountOriginal, t.CommissionPS, t.CommissionClient, t.CommissionProvider,
-			t.DateInput, t.DatePost,
-			t.Status, t.PaymentType, t.PaymentNumber, t.ServiceId, t.Service, t.PayeeId, t.PayeeName, t.PayeeBankMfo,
-			t.PayeeBankAccount, t.PaymentNarrative)
-		if i == len(transactions)-1 {
-			query += ";"
-		} else {
-			query += ", "
+	//SEPARATED QUERY BEGINS
+	count := len(transactions) / 50
+	if reminder := len(transactions) % 50; reminder != 0 {
+		count++
+	}
+	//log.Println("COUNT: ", count)
+	for k := 0; k < count; k++ {
+		//log.Println("BEGINS ITERATION: ", k)
+		query := "INSERT INTO transaction (transaction_id, request_id, terminal_id, partner_object_id, amount_total, " +
+			"amount_original, commission_ps, commission_client, commission_provider, date_input, date_post, status, " +
+			"payment_type, payment_number, service_id, service, payee_id, payee_name, payee_bank_mfo, payee_bank_account, " +
+			"payment_narrative) VALUES "
+
+		for j := 50 * k; j < 50+50*k && j < len(transactions); j++ {
+			//log.Println("READING INDEX: ", j)
+			query += fmt.Sprintf("(%d, %d, %d, %d, %.2f, %.2f, %.2f, %.2f, %.2f, '%s', '%s', '%s', '%s', '%s', %d, '%s', %d, '%s', %d, '%s', '%s')",
+				transactions[j].TransactionId, transactions[j].RequestId, transactions[j].TerminalId,
+				transactions[j].PartnerObjectId, transactions[j].AmountTotal, transactions[j].AmountOriginal,
+				transactions[j].CommissionPS, transactions[j].CommissionClient, transactions[j].CommissionProvider,
+				transactions[j].DateInput, transactions[j].DatePost, transactions[j].Status, transactions[j].PaymentType,
+				transactions[j].PaymentNumber, transactions[j].ServiceId, transactions[j].Service, transactions[j].PayeeId,
+				transactions[j].PayeeName, transactions[j].PayeeBankMfo, transactions[j].PayeeBankAccount,
+				transactions[j].PaymentNarrative)
+			if j == (50+50*k)-1 || j == len(transactions)-1 {
+				query += ";"
+			} else {
+				query += ", "
+			}
+
+		}
+		log.Println(query)
+		row := i.db.QueryRow(query)
+		if err := row.Err(); err != nil {
+			fmt.Println(err)
+			return err
 		}
 	}
 
-	row := i.db.QueryRow(query)
-	if err := row.Err(); err != nil {
-		fmt.Println(err)
-		return err
-	}
+	// SEPARATED QUERY ENDS
+
+	//WHOLE QUERY BEGINS
+	//query := "INSERT INTO transaction (transaction_id, request_id, terminal_id, partner_object_id, amount_total, " +
+	//	"amount_original, commission_ps, commission_client, commission_provider, date_input, date_post, status, " +
+	//	"payment_type, payment_number, service_id, service, payee_id, payee_name, payee_bank_mfo, payee_bank_account, " +
+	//	"payment_narrative) VALUES "
+	//
+	//for i, t := range transactions {
+	//	query += fmt.Sprintf("(%d, %d, %d, %d, %.2f, %.2f, %.2f, %.2f, %.2f, '%s', '%s', '%s', '%s', '%s', %d, '%s', %d, '%s', %d, '%s', '%s')",
+	//		t.TransactionId, t.RequestId, t.TerminalId, t.PartnerObjectId, t.AmountTotal,
+	//		t.AmountOriginal, t.CommissionPS, t.CommissionClient, t.CommissionProvider,
+	//		t.DateInput, t.DatePost,
+	//		t.Status, t.PaymentType, t.PaymentNumber, t.ServiceId, t.Service, t.PayeeId, t.PayeeName, t.PayeeBankMfo,
+	//		t.PayeeBankAccount, t.PaymentNarrative)
+	//	if i == len(transactions)-1 {
+	//		query += ";"
+	//	} else {
+	//		query += ", "
+	//	}
+	//}
+	//
+	//row := i.db.QueryRow(query)
+	//if err := row.Err(); err != nil {
+	//	fmt.Println(err)
+	//	return err
+	//}
+	//WHOLE QUERY ENDS
 	return nil
 }
 

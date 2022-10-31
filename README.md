@@ -43,7 +43,7 @@ To run docker compose use command:
 
 ## Endpoints
 
-- `/upload-csv` POST method for uploading a CSV file with key `file`
+- `/upload-csv` POST method for uploading a CSV file with key `file`.
 - `/get-json` GET method to get data from database in JSON format.
 - `/get-csv-file` GET method to get data from database in attached CSV file.
 
@@ -62,6 +62,14 @@ With `/get-json` & `/get-csv-file` can be used filters with keys, examples:
 It can be used none of them, one of them, several filters or all filters at once:
 
 ```/get-json?terminal_id=3518,3506,3507&payment_narrative='ослуг А11/27122 від'&date_post_to=2022-08-17&date_post_from=2022-08-13```
+
+## Features of the program
+- the program was made with implement Clean Architecture
+- Dependency Injection is implemented
+- implemented Gratefull shutdown (not yet)
+- implemented the use of migrations (by running the program with a key and through the command line)
+- implemented adding records to the database by queries for 50 records
+- before adding new data to the database, transaction_id is checked for uniqueness (not yet)
 
 ## Documentation 
 Swagger documentation is available on [/swagger/index.html](http://localhost:8000/swagger/index.html)

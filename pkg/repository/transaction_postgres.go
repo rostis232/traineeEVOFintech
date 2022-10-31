@@ -21,6 +21,7 @@ func NewTransactionPostgres(db *sqlx.DB) *TransactionPostgres {
 func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transaction) error {
 
 	//SEPARATED QUERY BEGINS
+	// At once SQL request sends only 50 transactions to DB, after that sends next 50 and so on.
 	count := len(transactions) / 50
 	if reminder := len(transactions) % 50; reminder != 0 {
 		count++

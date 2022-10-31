@@ -6,7 +6,7 @@ The author tried to write this project using the principles of Clean Architectur
 
 Configurations stored in `internal/config/config.go`
 
-- database configuration stored in `DBConfig struct`. Note! Project uses PostgreSQL 15.0. If you don't use docker compose set `config.DBConfig.Host == "localhost"`. If you use it set `config.DBConfig.Host == "db"`. 
+- database configuration stored in `DBConfig struct`. If you don't use docker compose set `config.DBConfig.Host == "localhost"`. If you use it set `config.DBConfig.Host == "db"`. 
 - port number stored in `const PortNumber (default 8000)`.
 
 ## Launch
@@ -46,6 +46,7 @@ To run docker compose use command:
 - `/upload-csv` POST method for uploading a CSV file with key `file`
 - `/get-json` GET method to get data from database in JSON format.
 - `/get-csv-file` GET method to get data from database in attached CSV file.
+
 With `/get-json` & `/get-csv-file` can be used filters with keys, examples:
 
 | Key               | Example                                        | Note                                   |

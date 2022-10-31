@@ -1,4 +1,4 @@
-CREATE TABLE transaction
+CREATE TABLE IF NOT EXISTS transaction
 (
     transaction_id integer primary key unique,
     request_id integer,

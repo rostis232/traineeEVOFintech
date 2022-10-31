@@ -6,20 +6,40 @@ The author tried to write this project using the principles of Clean Architectur
 
 Configurations stored in `internal/config/config.go`
 
-- database configuration stored in `DBConfig struct`. Note! Project uses PostgreSQL 15.0.
+- database configuration stored in `DBConfig struct`. Note! Project uses PostgreSQL 15.0. If you don't use docker compose set `config.DBConfig.Host == "localhost"`. If you use it set `config.DBConfig.Host == "db"`. 
 - port number stored in `const PortNumber (default 8000)`.
 
 ## Launch
 
-To run without migration:
+To run the application:
 
 `go run cmd/web/main.go`
 
 To run with migration type key -m or --migrate:
 
-`go run cmd/web/main.go -m`
+`go run cmd/web/main.go -dm`
 
-`go run cmd/web/main.go --migrate`
+`go run cmd/web/main.go --dontmigrate`
+
+If you don`t type this key, the application will ask you about it in console.
+
+## Docker & Docker Compose
+
+To build image docker use command:
+
+`docker build -t trans-app .`
+
+To run docker image use command:
+
+`docker run --name=transaction-app -p 8000:8000 trans-app`
+
+To build docker compose use command:
+
+`docker-compose up --build trans-app`
+
+To run docker compose use command:
+
+`docker-compose up trans-app`
 
 ## Endpoints
 

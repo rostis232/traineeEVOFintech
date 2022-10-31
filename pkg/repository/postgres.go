@@ -27,27 +27,29 @@ func NewPostgresDB(cfg DBConfig) (*sqlx.DB, error) {
 		return nil, err
 	}
 
-	for _, arg := range os.Args[1:] {
-		if arg == "-m" || arg == "--migrate" {
-			log.Println("Make Migrations...")
-			//Для використання існуючого коннекту необхідно використати
-			//driver, err := postgres.WithInstance(db, &postgres.Config{})
-			//    m, err := migrate.NewWithDatabaseInstance(
-			//        "file:///migrations",
-			//        "postgres", driver)
-			//    m.Up() // or m.Step(2) if you want to explicitly set the number of migrations to run
-			//}
-			//У sqlx.DB є поле типу sql.DB для цих випадків
-			m, err := migrate.New("file://./schema", "postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable")
-			if err != nil {
-				log.Println(err)
+	if len(os.Args) > 1 {
+		if os.Args[1] == "-m" || os.Args[1] == "--migrate" {
+			doMigrate()
+		}
+	} else {
+		mgr := ""
+		log.Println("You don`t make migration. Want to do it? [y - yes/n - no]")
+		for {
+			fmt.Scan(&mgr)
+			if mgr == "y" || mgr == "n" {
+				break
 			} else {
-				if err := m.Up(); err != nil {
-					log.Printf("Migrations error: '%s'\n", err)
-				} else {
-					log.Println("Migrations are successful")
-				}
+				log.Println("Wrong answer. Try again.")
+				log.Println("You don`t make migration. Want to do it? [y - yes/n - no]")
 			}
+		}
+		switch mgr {
+		case "y":
+			doMigrate()
+		case "n":
+			log.Println("Skip migration")
+		default:
+
 		}
 	}
 
@@ -58,4 +60,18 @@ func NewPostgresDB(cfg DBConfig) (*sqlx.DB, error) {
 
 	return db, nil
 
+}
+
+func doMigrate() {
+	log.Println("Make Migrations...")
+	m, err := migrate.New("file://./schema", "postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable")
+	if err != nil {
+		log.Println(err)
+	} else {
+		if err := m.Up(); err != nil {
+			log.Printf("Migrations error: '%s'\n", err)
+		} else {
+			log.Println("Migrations are successful")
+		}
+	}
 }

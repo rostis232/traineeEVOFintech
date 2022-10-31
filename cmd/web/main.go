@@ -22,11 +22,16 @@ import (
 // @BasePath /
 
 func main() {
+	run()
+}
+
+func run() error {
 	fmt.Printf("Starting application on port %s\n", config.PortNumber)
 
 	db, err := repository.NewPostgresDB(config.DBConfig)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	repos := repository.NewRepository(db)
@@ -36,5 +41,7 @@ func main() {
 	srv := new(traineeEVOFintech.Server)
 	if err := srv.Run(config.PortNumber, handlers.InitRoutes()); err != nil {
 		log.Fatal(err)
+		return err
 	}
+	return nil
 }

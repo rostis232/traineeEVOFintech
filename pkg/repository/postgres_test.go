@@ -1,13 +1,14 @@
 package repository
 
-var testDBConfig = DBConfig{
-	Host:     "localhost",
-	Port:     "5432",
-	Username: "postgres",
-	Password: "qwerty",
-	DBName:   "postgres",
-	SSLMode:  "disable",
-}
+//
+//var testDBConfig = DBConfig{
+//	Host:     "localhost",
+//	Port:     "5432",
+//	Username: "postgres",
+//	Password: "qwerty",
+//	DBName:   "postgres",
+//	SSLMode:  "disable",
+//}
 
 //func TestNewPostgresDB(t *testing.T) {
 //	_, err := NewPostgresDB(testDBConfig)

@@ -53,7 +53,6 @@ func TestCreateQuery(t *testing.T) {
 
 	for _, m := range tests {
 		query := createQuery(m)
-		fmt.Println(query)
 		if len(m) != 0 && !strings.HasPrefix(query, "SELECT * FROM transaction WHERE") {
 			t.Error("Query prefix does not contain 'SELECT * FROM transaction WHERE'")
 		}
@@ -71,27 +70,20 @@ func TestCreateQuery(t *testing.T) {
 			}
 		}
 
-		//v, ok = m["terminalId"]
-		//if ok == true && v != "" {
-		//	if !strings.HasSuffix(query, "WHERE ") {
-		//		query += " AND "
-		//	}
-		//	arguments := strings.Split(v, ",")
-		//	if len(arguments) == 1 {
-		//		query += fmt.Sprintf("terminal_id = %s", v)
-		//	} else {
-		//		query += "terminal_id IN ("
-		//		for i, a := range arguments {
-		//			query += fmt.Sprintf("'%s'", a)
-		//			if i != len(arguments)-1 {
-		//				query += ","
-		//			} else {
-		//				query += ")"
-		//			}
-		//		}
-		//	}
-		//
-		//}
+		v, ok = m["terminalId"]
+		if ok == true && v != "" {
+			arguments := strings.Split(v, ",")
+			if len(arguments) == 1 {
+				if !strings.Contains(query, fmt.Sprintf("terminal_id = %s", v)) {
+					t.Errorf("Query does not contain '%s'", fmt.Sprintf("terminal_id = %s", v))
+				}
+			} else {
+				if !strings.Contains(query, fmt.Sprintf("terminal_id IN")) {
+					t.Error("Query does not contain 'terminal_id IN'")
+				}
+			}
+
+		}
 
 		v, ok = m["status"]
 		if ok == true && v != "" {

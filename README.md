@@ -1,3 +1,9 @@
+
+<p align="center">
+
+  <img src="https://evo.company/wp-content/uploads/2022/04/fntch_logo.svg" width="350" alt="EVO Fintech logo">
+</p>
+
 # Project for Trainee EVO Fintech (second stage)
 Program accepts CSV file and parses it's data to database. Data can be gotten from database with filters in JSON. CSV example stored in `csv_example/example.csv`.
 The author tried to write this project using the principles of Clean Architecture and Dependency Injection.

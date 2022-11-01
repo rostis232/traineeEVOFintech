@@ -4,7 +4,7 @@ services:
   trans-app:
     restart: always
     build: ./
-    command: ./trans-app -m
+    command: ./trans-app
     ports:
       - "8000:8000"
     depends_on:

@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/rostis232/traineeEVOFintech"
 	"log"
+	"sort"
 	"strings"
 	"time"
 )
@@ -19,11 +20,34 @@ func NewTransactionPostgres(db *sqlx.DB) *TransactionPostgres {
 
 // InsertToDB inserts data from []traineeEVOFintech.Transaction to DB
 func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transaction) error {
+	uniqueTransactions := []traineeEVOFintech.Transaction{}
+	trId := []int{}
+	notUnique := []int{}
+	var err error = nil
+	//Making request to DB to get transaction_ids
+	err = i.db.Select(&trId, "SELECT transaction_id FROM transaction;")
+	if err != nil {
+		log.Println(err)
+	}
+
+	for i := 0; i < len(transactions); i++ {
+		if sort.SearchInts(trId, int(transactions[i].TransactionId)) == len(trId) {
+			uniqueTransactions = append(uniqueTransactions, transactions[i])
+		} else {
+			notUnique = append(notUnique, int(transactions[i].TransactionId))
+		}
+	}
+
+	if len(notUnique) != 0 && len(uniqueTransactions) != 0 {
+		err = fmt.Errorf("records with unique transaction_id field are added to the database. Records with non-unique field are ignored: %v. ", notUnique)
+	} else if len(notUnique) != 0 && len(uniqueTransactions) == 0 {
+		err = fmt.Errorf("all received records contain non-unique transaction_id fields and were ignored")
+	}
 
 	//SEPARATED QUERY BEGINS
 	// At once SQL request sends only 50 transactions to DB, after that sends next 50 and so on.
-	count := len(transactions) / 50
-	if reminder := len(transactions) % 50; reminder != 0 {
+	count := len(uniqueTransactions) / 50
+	if reminder := len(uniqueTransactions) % 50; reminder != 0 {
 		count++
 	}
 	//log.Println("COUNT: ", count)
@@ -34,24 +58,24 @@ func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transa
 			"payment_type, payment_number, service_id, service, payee_id, payee_name, payee_bank_mfo, payee_bank_account, " +
 			"payment_narrative) VALUES "
 
-		for j := 50 * k; j < 50+50*k && j < len(transactions); j++ {
+		for j := 50 * k; j < 50+50*k && j < len(uniqueTransactions); j++ {
 			//log.Println("READING INDEX: ", j)
 			query += fmt.Sprintf("(%d, %d, %d, %d, %.2f, %.2f, %.2f, %.2f, %.2f, '%s', '%s', '%s', '%s', '%s', %d, '%s', %d, '%s', %d, '%s', '%s')",
-				transactions[j].TransactionId, transactions[j].RequestId, transactions[j].TerminalId,
-				transactions[j].PartnerObjectId, transactions[j].AmountTotal, transactions[j].AmountOriginal,
-				transactions[j].CommissionPS, transactions[j].CommissionClient, transactions[j].CommissionProvider,
-				transactions[j].DateInput, transactions[j].DatePost, transactions[j].Status, transactions[j].PaymentType,
-				transactions[j].PaymentNumber, transactions[j].ServiceId, transactions[j].Service, transactions[j].PayeeId,
-				transactions[j].PayeeName, transactions[j].PayeeBankMfo, transactions[j].PayeeBankAccount,
-				transactions[j].PaymentNarrative)
-			if j == (50+50*k)-1 || j == len(transactions)-1 {
+				uniqueTransactions[j].TransactionId, uniqueTransactions[j].RequestId, uniqueTransactions[j].TerminalId,
+				uniqueTransactions[j].PartnerObjectId, uniqueTransactions[j].AmountTotal, uniqueTransactions[j].AmountOriginal,
+				uniqueTransactions[j].CommissionPS, uniqueTransactions[j].CommissionClient, uniqueTransactions[j].CommissionProvider,
+				uniqueTransactions[j].DateInput, uniqueTransactions[j].DatePost, uniqueTransactions[j].Status, uniqueTransactions[j].PaymentType,
+				uniqueTransactions[j].PaymentNumber, uniqueTransactions[j].ServiceId, uniqueTransactions[j].Service, uniqueTransactions[j].PayeeId,
+				uniqueTransactions[j].PayeeName, uniqueTransactions[j].PayeeBankMfo, uniqueTransactions[j].PayeeBankAccount,
+				uniqueTransactions[j].PaymentNarrative)
+			if j == (50+50*k)-1 || j == len(uniqueTransactions)-1 {
 				query += ";"
 			} else {
 				query += ", "
 			}
 
 		}
-		log.Println(query)
+		//log.Println(query)
 		row := i.db.QueryRow(query)
 		if err := row.Err(); err != nil {
 			fmt.Println(err)
@@ -59,35 +83,7 @@ func (i *TransactionPostgres) InsertToDB(transactions []traineeEVOFintech.Transa
 		}
 	}
 
-	// SEPARATED QUERY ENDS
-
-	//WHOLE QUERY BEGINS
-	//query := "INSERT INTO transaction (transaction_id, request_id, terminal_id, partner_object_id, amount_total, " +
-	//	"amount_original, commission_ps, commission_client, commission_provider, date_input, date_post, status, " +
-	//	"payment_type, payment_number, service_id, service, payee_id, payee_name, payee_bank_mfo, payee_bank_account, " +
-	//	"payment_narrative) VALUES "
-	//
-	//for i, t := range transactions {
-	//	query += fmt.Sprintf("(%d, %d, %d, %d, %.2f, %.2f, %.2f, %.2f, %.2f, '%s', '%s', '%s', '%s', '%s', %d, '%s', %d, '%s', %d, '%s', '%s')",
-	//		t.TransactionId, t.RequestId, t.TerminalId, t.PartnerObjectId, t.AmountTotal,
-	//		t.AmountOriginal, t.CommissionPS, t.CommissionClient, t.CommissionProvider,
-	//		t.DateInput, t.DatePost,
-	//		t.Status, t.PaymentType, t.PaymentNumber, t.ServiceId, t.Service, t.PayeeId, t.PayeeName, t.PayeeBankMfo,
-	//		t.PayeeBankAccount, t.PaymentNarrative)
-	//	if i == len(transactions)-1 {
-	//		query += ";"
-	//	} else {
-	//		query += ", "
-	//	}
-	//}
-	//
-	//row := i.db.QueryRow(query)
-	//if err := row.Err(); err != nil {
-	//	fmt.Println(err)
-	//	return err
-	//}
-	//WHOLE QUERY ENDS
-	return nil
+	return err
 }
 
 // GetJSON collect data from DB uses keys stored in map[string]string and return []traineeEVOFintech.Transaction
@@ -99,7 +95,7 @@ func (i *TransactionPostgres) GetJSON(m map[string]string) ([]traineeEVOFintech.
 		return nil, err
 	}
 
-	for i, _ := range transactions {
+	for i := range transactions {
 		transactions[i].DBTimeToJSON()
 	}
 
@@ -115,7 +111,7 @@ func (i *TransactionPostgres) GetCSVFile(m map[string]string) ([]traineeEVOFinte
 		return nil, err
 	}
 
-	for i, _ := range transactions {
+	for i := range transactions {
 		transactions[i].DBTimeToJSON()
 	}
 

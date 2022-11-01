@@ -68,8 +68,10 @@ It can be used none of them, one of them, several filters or all filters at once
 - Dependency Injection is implemented
 - implemented Gratefull shutdown (not yet)
 - implemented the use of migrations (by running the program with a key and through the command line)
-- implemented adding records to the database by queries for 50 records
-- before adding new data to the database, transaction_id is checked for uniqueness (not yet)
+- To provide the ability to work with large files:
+- - parsing is carried out line by line in goroutines
+- - implemented adding records to the database by queries for 50 records
+- before adding new data to the database, transaction_id is checked for uniqueness.  When a file is received, only records with a unique transaction_id value are entered into the database, and non-unique transaction_id values are returned with an error.
 
 ## Documentation 
 Swagger documentation is available on [/swagger/index.html](http://localhost:8000/swagger/index.html)

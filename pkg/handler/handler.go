@@ -198,10 +198,24 @@ func csvToStruct(timestamp string) ([]traineeEVOFintech.Transaction, error) {
 
 	transactions := []traineeEVOFintech.Transaction{}
 
-	if err := gocsv.UnmarshalFile(file, &transactions); err != nil {
-		fmt.Println(err)
-		return nil, err
+	// make channel
+	c := make(chan traineeEVOFintech.Transaction)
+
+	go func() { // start parsing the CSV file
+		err = gocsv.UnmarshalToChan(file, c) // <---- here it is
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	for r := range c {
+		transactions = append(transactions, r)
 	}
+
+	//if err := gocsv.UnmarshalFile(file, &transactions); err != nil {
+	//	fmt.Println(err)
+	//	return nil, err
+	//}
 
 	return transactions, nil
 }

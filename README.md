@@ -21,13 +21,7 @@ To run the application:
 
 `go run cmd/web/main.go`
 
-To run with migration type key -m or --migrate:
-
-`go run cmd/web/main.go -m`
-
-`go run cmd/web/main.go --migrate`
-
-If you don`t type this key, the application will ask you about it in console.
+When you run the application, it performs migrations to the database.
 
 ## Docker & Docker Compose
 
@@ -73,7 +67,7 @@ It can be used none of them, one of them, several filters or all filters at once
 - the program was made with implement Clean Architecture
 - Dependency Injection is implemented
 - implemented Gratefull shutdown (not yet)
-- implemented the use of migrations (by running the program with a key and through the command line)
+- implemented the use of migrations (when you run the application, it performs migrations to the database)
 - To provide the ability to work with large files:
 - - parsing is carried out line by line in goroutines
 - - implemented adding records to the database by queries for 50 records

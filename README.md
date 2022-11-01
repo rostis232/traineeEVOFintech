@@ -66,7 +66,7 @@ It can be used none of them, one of them, several filters or all filters at once
 ## Features of the program
 - the program was made with implement Clean Architecture
 - Dependency Injection is implemented
-- implemented Gratefull shutdown (not yet)
+- implemented Graceful shutdown
 - implemented the use of migrations (when you run the application, it performs migrations to the database)
 - To provide the ability to work with large files:
 - - parsing is carried out line by line in goroutines

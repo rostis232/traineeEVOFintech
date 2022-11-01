@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	_ "github.com/lib/pq"
 	"github.com/rostis232/traineeEVOFintech"
 	"github.com/rostis232/traineeEVOFintech/internal/config"
@@ -9,6 +9,9 @@ import (
 	"github.com/rostis232/traineeEVOFintech/pkg/repository"
 	"github.com/rostis232/traineeEVOFintech/pkg/service"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 // @title Trainee EVO Fintech project (Transactions App API)
@@ -22,16 +25,9 @@ import (
 // @BasePath /
 
 func main() {
-	run()
-}
-
-func run() error {
-	fmt.Printf("Starting application on port %s\n", config.PortNumber)
-
 	db, err := repository.NewPostgresDB(config.DBConfig)
 	if err != nil {
 		log.Fatal(err)
-		return err
 	}
 
 	repos := repository.NewRepository(db)
@@ -39,9 +35,24 @@ func run() error {
 	handlers := handler.NewHandler(services)
 
 	srv := new(traineeEVOFintech.Server)
-	if err := srv.Run(config.PortNumber, handlers.InitRoutes()); err != nil {
-		log.Fatal(err)
-		return err
+
+	go func() {
+		if err := srv.Run(config.PortNumber, handlers.InitRoutes()); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	log.Printf("Starting application on port %s\n", config.PortNumber)
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	log.Println("Application shutting down")
+	if err := srv.Shutdown(context.Background()); err != nil {
+		log.Printf("Error occured on server shuttimg down: %v", err)
 	}
-	return nil
+	if err := db.Close(); err != nil {
+		log.Printf("Error occured on DB connection close: %v", err)
+	}
 }

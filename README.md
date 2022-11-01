@@ -17,9 +17,9 @@ To run the application:
 
 To run with migration type key -m or --migrate:
 
-`go run cmd/web/main.go -dm`
+`go run cmd/web/main.go -m`
 
-`go run cmd/web/main.go --dontmigrate`
+`go run cmd/web/main.go --migrate`
 
 If you don`t type this key, the application will ask you about it in console.
 
